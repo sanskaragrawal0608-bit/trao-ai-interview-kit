@@ -1,22 +1,25 @@
 "use client";
 
-import {useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function CreatePage() {
   const router = useRouter();
-useEffect(() => {
-  const isLoggedIn = localStorage.getItem("isLoggedIn");
 
-  if (isLoggedIn !== "true") {
-    router.replace("/login");
-  }
-}, [router]);
   const [jobDescription, setJobDescription] = useState("");
   const [companyWebsite, setCompanyWebsite] = useState("");
   const [interviewDate, setInterviewDate] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Protect route
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
+
+    if (isLoggedIn !== "true") {
+      router.replace("/login");
+    }
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,22 +28,27 @@ useEffect(() => {
     setError("");
 
     try {
-      const response = await fetch("/api/generate-kit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          jobDescription,
-          companyWebsite,
-          interviewDate,
-        }),
-      });
+      const response = await fetch(
+        "https://trao-ai-interview-kit-backend.onrender.com/api/generate-kit",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            jobDescription,
+            companyWebsite,
+            interviewDate,
+          }),
+        }
+      );
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to generate interview kit");
+        throw new Error(
+          data.error || "Failed to generate interview kit"
+        );
       }
 
       localStorage.setItem(
@@ -72,14 +80,14 @@ useEffect(() => {
       {/* Header */}
       <header className="border-b bg-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <h1 className="text-xl font-bold">
+          <h1 className="text-xl font-bold text-gray-900">
             AI Interview Prep Kit
           </h1>
 
           <button
             type="button"
             onClick={() => router.push("/dashboard")}
-            className="rounded-lg bg-black px-5 py-2 text-sm font-medium text-white"
+            className="cursor-pointer rounded-lg bg-black px-5 py-2 text-sm font-medium text-white transition hover:bg-gray-800"
           >
             Dashboard
           </button>
@@ -105,7 +113,7 @@ useEffect(() => {
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-6 rounded-2xl border bg-white p-8 shadow-sm"
+          className="space-y-6 rounded-2xl border border-gray-200 bg-white p-8 shadow-sm"
         >
           {/* Job Description */}
           <div>
@@ -119,7 +127,7 @@ useEffect(() => {
               placeholder="Paste the job description here..."
               rows={8}
               required
-              className="w-full rounded-xl border border-gray-300 p-4 text-sm outline-none transition focus:border-black focus:ring-1 focus:ring-black"
+              className="w-full rounded-xl border border-gray-300 p-4 text-sm text-gray-900 outline-none transition focus:border-black focus:ring-1 focus:ring-black"
             />
           </div>
 
@@ -134,7 +142,7 @@ useEffect(() => {
               value={companyWebsite}
               onChange={(e) => setCompanyWebsite(e.target.value)}
               placeholder="https://company.com"
-              className="w-full rounded-xl border border-gray-300 p-4 text-sm outline-none transition focus:border-black focus:ring-1 focus:ring-black"
+              className="w-full rounded-xl border border-gray-300 p-4 text-sm text-gray-900 outline-none transition focus:border-black focus:ring-1 focus:ring-black"
             />
           </div>
 
@@ -149,7 +157,7 @@ useEffect(() => {
               value={interviewDate}
               onChange={(e) => setInterviewDate(e.target.value)}
               required
-              className="w-full rounded-xl border border-gray-300 p-4 text-sm outline-none transition focus:border-black focus:ring-1 focus:ring-black"
+              className="w-full rounded-xl border border-gray-300 p-4 text-sm text-gray-900 outline-none transition focus:border-black focus:ring-1 focus:ring-black"
             />
           </div>
 
@@ -164,7 +172,7 @@ useEffect(() => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-black px-6 py-4 font-semibold text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full cursor-pointer rounded-xl bg-black px-6 py-4 font-semibold text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading
               ? "Generating your interview kit..."

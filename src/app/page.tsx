@@ -49,16 +49,17 @@ export default function Home() {
 
           <button
   onClick={() => {
-    window.location.href = "/create";
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
+
+    if (isLoggedIn === "true") {
+      window.location.href = "/create";
+    } else {
+      window.location.href = "/login";
+    }
   }}
-  className="group cursor-pointer rounded-xl bg-black px-7 py-4 font-semibold text-white transition-all duration-200 hover:bg-gray-800"
+  className="cursor-pointer rounded-xl bg-black px-8 py-4 text-lg font-semibold text-white"
 >
-  <span className="inline-flex items-center gap-2">
-    Create Interview Kit
-    <span className="transition-transform duration-200 group-hover:translate-x-1">
-      →
-    </span>
-  </span>
+  Create Interview Kit →
 </button>
         </div>
       </section>
