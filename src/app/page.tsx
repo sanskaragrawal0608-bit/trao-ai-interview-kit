@@ -1,3 +1,4 @@
+"use client";
 export default function Home() {
   return (
     <main className="min-h-screen bg-gray-50">
@@ -8,13 +9,23 @@ export default function Home() {
           </h1>
 
           <div className="flex gap-3">
-            <button className="rounded-lg border px-4 py-2">
-              Login
-            </button>
+            <button
+  onClick={() => {
+    window.location.href = "/login";
+  }}
+  className="cursor-pointer rounded-lg border px-4 py-2 transition hover:bg-gray-100"
+>
+  Login
+</button>
 
-            <button className="rounded-lg bg-black px-4 py-2 text-white">
-              Register
-            </button>
+            <button
+  onClick={() => {
+    window.location.href = "/register";
+  }}
+  className="cursor-pointer rounded-lg bg-black px-4 py-2 text-white transition hover:bg-gray-800"
+>
+  Register
+</button>
           </div>
         </div>
       </header>
@@ -36,9 +47,19 @@ export default function Home() {
             flashcards and study schedule.
           </p>
 
-          <button className="mt-8 rounded-xl bg-black px-6 py-3 font-medium text-white">
-            Create Interview Kit
-          </button>
+          <button
+  onClick={() => {
+    window.location.href = "/create";
+  }}
+  className="group cursor-pointer rounded-xl bg-black px-7 py-4 font-semibold text-white transition-all duration-200 hover:bg-gray-800"
+>
+  <span className="inline-flex items-center gap-2">
+    Create Interview Kit
+    <span className="transition-transform duration-200 group-hover:translate-x-1">
+      →
+    </span>
+  </span>
+</button>
         </div>
       </section>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type AIKit = {
   summary: string;
@@ -23,29 +24,44 @@ type InterviewKit = {
 };
 
 export default function DashboardPage() {
+  const router = useRouter();
+  
+useEffect(() => {
+  const isLoggedIn = localStorage.getItem("isLoggedIn");
+
+  if (isLoggedIn !== "true") {
+    router.replace("/login");
+  }
+}, [router]);
   const [kit, setKit] = useState<InterviewKit | null>(null);
   const [completedQuestions, setCompletedQuestions] = useState<number[]>([]);
   const [completedDays, setCompletedDays] = useState<number[]>([]);
 
   useEffect(() => {
-    const savedKit = localStorage.getItem("interviewKit");
-    const savedProgress = localStorage.getItem("questionProgress");
-    const savedScheduleProgress =
-      localStorage.getItem("scheduleProgress");
+  const isLoggedIn = localStorage.getItem("isLoggedIn");
 
-    if (savedKit) {
-      setKit(JSON.parse(savedKit));
-    }
+  if (isLoggedIn !== "true") {
+    router.push("/login");
+    return;
+  }
 
-    if (savedProgress) {
-      setCompletedQuestions(JSON.parse(savedProgress));
-    }
+  const savedKit = localStorage.getItem("interviewKit");
+  const savedProgress = localStorage.getItem("questionProgress");
+  const savedScheduleProgress =
+    localStorage.getItem("scheduleProgress");
 
-    if (savedScheduleProgress) {
-      setCompletedDays(JSON.parse(savedScheduleProgress));
-    }
-  }, []);
+  if (savedKit) {
+    setKit(JSON.parse(savedKit));
+  }
 
+  if (savedProgress) {
+    setCompletedQuestions(JSON.parse(savedProgress));
+  }
+
+  if (savedScheduleProgress) {
+    setCompletedDays(JSON.parse(savedScheduleProgress));
+  }
+}, [router]);
   const ai = kit?.aiKit;
 
   const technicalCount = ai?.technicalQuestions.length ?? 0;
@@ -99,7 +115,12 @@ export default function DashboardPage() {
     localStorage.removeItem("questionProgress");
     localStorage.removeItem("scheduleProgress");
 
-    window.location.href = "/create";
+    router.push("/create");
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    router.push("/login");
   };
 
   return (
@@ -113,12 +134,23 @@ export default function DashboardPage() {
             AI Interview Prep Kit
           </h1>
 
-          <button
-            onClick={createNewKit}
-            className="rounded-lg border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-900 transition hover:bg-gray-50"
-          >
-            New Kit
-          </button>
+          <div className="flex gap-3">
+
+            <button
+              onClick={createNewKit}
+              className="rounded-lg border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-900 transition hover:bg-gray-50"
+            >
+              New Kit
+            </button>
+
+            <button
+              onClick={handleLogout}
+              className="rounded-lg bg-black px-5 py-2 text-sm font-medium text-white transition hover:bg-gray-800"
+            >
+              Logout
+            </button>
+
+          </div>
 
         </div>
       </header>
@@ -257,14 +289,12 @@ export default function DashboardPage() {
               <div className="mt-5 flex flex-wrap gap-3">
 
                 {ai.keySkills.map((skill, index) => (
-
                   <span
                     key={index}
                     className="rounded-full bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700"
                   >
                     {skill}
                   </span>
-
                 ))}
 
               </div>
@@ -281,14 +311,12 @@ export default function DashboardPage() {
               <ul className="mt-5 space-y-3">
 
                 {ai.companyResearch.map((item, index) => (
-
                   <li
                     key={index}
                     className="rounded-xl bg-gray-50 p-4 leading-6 text-gray-700"
                   >
                     {item}
                   </li>
-
                 ))}
 
               </ul>
@@ -307,11 +335,11 @@ export default function DashboardPage() {
                 {ai.technicalQuestions.map((question, index) => {
 
                   const id = index;
+
                   const completed =
                     completedQuestions.includes(id);
 
                   return (
-
                     <label
                       key={index}
                       className={`flex cursor-pointer items-start gap-4 rounded-xl border p-4 transition ${
@@ -339,7 +367,6 @@ export default function DashboardPage() {
                       </span>
 
                     </label>
-
                   );
                 })}
 
@@ -365,7 +392,6 @@ export default function DashboardPage() {
                     completedQuestions.includes(id);
 
                   return (
-
                     <label
                       key={index}
                       className={`flex cursor-pointer items-start gap-4 rounded-xl border p-4 transition ${
@@ -393,7 +419,6 @@ export default function DashboardPage() {
                       </span>
 
                     </label>
-
                   );
                 })}
 
@@ -421,7 +446,6 @@ export default function DashboardPage() {
                     completedQuestions.includes(id);
 
                   return (
-
                     <label
                       key={index}
                       className={`flex cursor-pointer items-start gap-4 rounded-xl border p-4 transition ${
@@ -449,7 +473,6 @@ export default function DashboardPage() {
                       </span>
 
                     </label>
-
                   );
                 })}
 
@@ -489,7 +512,6 @@ export default function DashboardPage() {
                     completedDays.includes(index);
 
                   return (
-
                     <label
                       key={index}
                       className={`cursor-pointer rounded-xl border p-5 transition ${
@@ -541,9 +563,7 @@ export default function DashboardPage() {
                       </div>
 
                     </label>
-
                   );
-
                 })}
 
               </div>
@@ -570,7 +590,6 @@ export default function DashboardPage() {
 
         {/* No AI Data */}
         {!ai && (
-
           <div className="rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-sm">
 
             <div className="text-4xl">
@@ -586,20 +605,16 @@ export default function DashboardPage() {
             </p>
 
             <button
-              onClick={() => {
-                window.location.href = "/create";
-              }}
+              onClick={() => router.push("/create")}
               className="mt-6 rounded-xl bg-black px-6 py-3 font-semibold text-white transition hover:bg-gray-800"
             >
               Create Interview Kit
             </button>
 
           </div>
-
         )}
 
       </section>
-
     </main>
   );
 }

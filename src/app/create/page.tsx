@@ -1,11 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import {useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function CreatePage() {
   const router = useRouter();
+useEffect(() => {
+  const isLoggedIn = localStorage.getItem("isLoggedIn");
 
+  if (isLoggedIn !== "true") {
+    router.replace("/login");
+  }
+}, [router]);
   const [jobDescription, setJobDescription] = useState("");
   const [companyWebsite, setCompanyWebsite] = useState("");
   const [interviewDate, setInterviewDate] = useState("");
